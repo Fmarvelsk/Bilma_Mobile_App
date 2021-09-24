@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker'
+import  {LinearGradient } from 'expo-linear-gradient';
 
 export default function App() {
   const [username, setUsername] = useState("")
@@ -19,7 +20,7 @@ export default function App() {
   const [selectedValue, setSelectedValue] = useState('')
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={['#F5F5F573', '#D7D7D780']} style={styles.container}>
       {signUp ?
         (<>
           <Text style={styles.headerText}>
@@ -102,6 +103,7 @@ export default function App() {
             <Text style={{
               height: 30,
               marginTop: 10,
+             
             }}> Forgot Password ?</Text>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -115,14 +117,13 @@ export default function App() {
 
           <StatusBar style="auto" />
         </>)}
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D7D7D7',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -135,6 +136,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
 
   },
+  loginText: {
+    color: '#fff'
+  },
   input: {
     padding: 10,
     height: 50,
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
 
   },
   headerText: {
-    color: '#ff6666',
+    color: '#192A51',
     marginBottom: 24,
     fontSize: 23
   },
@@ -154,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
-    backgroundColor: "#FF1493",
+    backgroundColor: "#192A51",
   },
 
 });
