@@ -3,10 +3,12 @@ import { Image, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AccessScreen from './screens/AccessScreen';
-import { ErrorHandler } from './utils/HandleError';
-import Profile from './screens/Profile';
-import HomeStack from './screens/HomeStack';
+import AccessScreen from './src/screens/AccessScreen';
+import { ErrorHandler } from './src/utils/HandleError';
+import Profile from './src/screens/Profile';
+import HomeStack from './src/screens/HomeStack';
+import { Provider } from "react-redux";
+import { store, persistor } from "./src/store";
 
 export default function App() {
   const [user, setUser] = useState(false)
@@ -14,6 +16,7 @@ export default function App() {
   const Tab = createBottomTabNavigator()
 
   return (
+    <Provider store={store}>
     <ErrorHandler>
       <NavigationContainer>
         {!user ?
@@ -35,7 +38,7 @@ export default function App() {
                 headerShown: false,
                 tabBarLabel:"Home",
                 tabBarIcon: ({size, focused}) => (
-                  <Image source={require('./assets/home.png') }/>
+                  <Image source={require('./src/assets/home.png') }/>
                 )
               }}
               children={() => <HomeStack/>}
@@ -51,6 +54,7 @@ export default function App() {
 
       </NavigationContainer>
     </ErrorHandler>
+    </Provider>
   );
 }
 

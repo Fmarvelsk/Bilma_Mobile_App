@@ -8,30 +8,48 @@ import {
   View,
   Image,
   TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker'
 import { LinearGradient } from 'expo-linear-gradient';
+import { auth } from '../firebase';
 
 export default function AccessScreen({ navigation, setUser }) {
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [fullName, setFullName] = useState("")
-  const [signUp, setSignUp] = useState(false)
+  const [signUp, setSignUp] = useState(1)
   const [selectedValue, setSelectedValue] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function authenticateUser(){
-    if(username.length === 0  || password.length === 0 ){
-      return setErrorMsg("Field cannot be empty") 
-    }
-    setUser(true)
-    navigation?.navigate('Home')
-    
+  function authenticateUser() {
+    setErrorMsg('')
+    if (email.length === 0 || password.length === 0) 
+      return setErrorMsg("Field cannot be empty")
+      setLoading(true)
+       
+    auth.signInWithEmailAndPassword(email, password).then(auth => {
+      if (auth) {
+        setUser(true)
+        setLoading(false)
+        navigation?.navigate('Home')
+      }
+      else {
+        setErrorMsg('Wrong email and password')
+        setLoading(false)
+      }
+    }).catch(err => {
+      console.log(err) 
+      setLoading(false)
+      setErrorMsg('Invalid Credentials')})
+   
   }
+
 
   return (
     <LinearGradient colors={['#F5F5F573', '#D7D7D780']} style={styles.container}>
-      {signUp ?
+      {signUp === 2 ?
         (<>
           <Text style={styles.headerText}>
             Register An Account
@@ -47,15 +65,15 @@ export default function AccessScreen({ navigation, setUser }) {
           <View style={styles.login}>
             <TextInput
               style={styles.input}
-              onChange={text => setUsername(text)}
-              placeholder="Username"
+              onChange={text => setEmail(text)}
+              placeholder="email"
             />
           </View>
 
           <View style={styles.login}>
             <TextInput
               style={styles.input}
-              onChange={text => setUsername(text)}
+              onChange={text => setEmail(text)}
               placeholder="Email"
             />
           </View>
@@ -76,13 +94,14 @@ export default function AccessScreen({ navigation, setUser }) {
               onChangeText={text => setPassword(text)}
               style={styles.input}
               placeholder="Password"
+              secureTextEntry={true}
             />
           </View>
           <TouchableOpacity style={styles.btnView}>
 
             <Text
               style={styles.loginText}
-             
+
             >SIGNUP</Text>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -90,21 +109,22 @@ export default function AccessScreen({ navigation, setUser }) {
               height: 30,
               marginTop: 10,
             }}
-              onPress={() => setSignUp(false)}
+              onPress={() => setSignUp(1)}
             > Already have an account? </Text>
           </TouchableOpacity>
         </>)
-        :
+        : signUp === 1 ?
         (<>
-          <Text style={styles.headerText}>Welcome To Bilma!</Text>
+          <Text style={styles.headerText}>Welcome To Kilonta!</Text>
           <Image style={{
             marginBottom: 30
           }} source={require('../assets/profile.png')} />
           <View style={styles.login}>
             <TextInput
               style={styles.input}
-              onChange={text => setUsername(text)}
-              placeholder="Username"
+              onChangeText={text => setEmail(text)}
+              placeholder="Email"
+              value={email}
             />
           </View>
           <View style={styles.login}>
@@ -112,15 +132,20 @@ export default function AccessScreen({ navigation, setUser }) {
               onChangeText={text => setPassword(text)}
               style={styles.input}
               placeholder="Password"
+              secureTextEntry={true}
             />
           </View>
-          <TouchableOpacity 
-          style={styles.btnView} 
-          onPress={authenticateUser}>
-
+          {!loading ? (<TouchableOpacity
+            style={styles.btnView}
+            onPress={authenticateUser}>
             <Text style={styles.loginText}>LOGIN</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
+          </TouchableOpacity>)
+            : (<>
+            <ActivityIndicator size="small" color="#0000ff" />
+            <Text>Loading.....</Text>
+            </>)}
+
+          <TouchableOpacity onPress={() => setSignUp(3)}>
             <Text style={{
               height: 30,
               marginTop: 10,
@@ -132,16 +157,28 @@ export default function AccessScreen({ navigation, setUser }) {
               height: 30,
               marginTop: 10,
             }}
-              onPress={() => setSignUp(true)}
+              onPress={() => setSignUp(2)}
             > Dont have an Account? Register </Text>
           </TouchableOpacity>
           <Text style={{
-              color : 'red'
-            }}>{errorMsg}</Text>
+            color: 'red'
+          }}>{errorMsg}</Text>
 
 
           <StatusBar style="auto" />
-        </>)}
+        </>) : 
+        signUp === 3 ? (<>
+          <Text style={styles.headerText}>
+         Forgot Password
+        </Text>
+        <View style={styles.login}>
+            <TextInput
+              style={styles.input}
+              onChange={text => setEmail(text)}
+              placeholder="email"
+            />
+          </View>
+      </>) : null}
     </LinearGradient>
   );
 }
