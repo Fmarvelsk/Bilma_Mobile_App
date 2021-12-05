@@ -17,6 +17,7 @@ const Profile = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar />
       <View style={styles.innerContainer}>
+        <Text style={{ textAlign: "center" }}>Profile</Text>
         <Image source={Placeholder} style={styles.headingProfile} />
         <View style={styles.profileImageContainer}>
           <Image source={PlaceholderProfile} style={styles.profileImage} />
