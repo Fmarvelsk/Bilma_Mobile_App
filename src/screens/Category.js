@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, ScrollView, TextInput, TouchableOpacity, TouchableWithoutFeedback, Image, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, TouchableWithoutFeedback, Image, ActivityIndicator } from "react-native";
 import HomeHeaderView from "../component/HomeHeaderView";
 import Header from '../component/Header'
 import pic from '../assets/pic.png'
@@ -49,8 +49,7 @@ console.log(categoryList)
                         <Header>
                             Recommeded
                         </Header>
-                        <FlatList renderItem={({item}) => (
-
+                 
                         <View style={style.category}>
                             <Image style={style.img_prop} source={pic} />
                             <View style={style.textside}>
@@ -75,8 +74,6 @@ console.log(categoryList)
                                 </View>
                             </View>
                         </View>
-                        )}/>
-                 
 
      
                     </View>
