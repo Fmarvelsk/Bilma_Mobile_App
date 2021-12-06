@@ -32,7 +32,7 @@ export default function AccessScreen({ navigation, setUser }) {
        
     auth.signInWithEmailAndPassword(email, password).then(auth => {
        setUser(true)
-        navigation?.navigate('Home') 
+        
     }).catch(err => {
       console.log(err) 
       setLoading(false)

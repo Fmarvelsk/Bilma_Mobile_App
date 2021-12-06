@@ -48,6 +48,7 @@ export default function HomeHeaderView({ navigation, children }) {
                 let data = snapshot.docs.map((snap) => {
                     const result = snap.data()
                     const id = snap.id
+                    console.log(result)
                     return { result, ...id }
                 })
                 setSearch(data)
