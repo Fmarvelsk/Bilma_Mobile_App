@@ -8,7 +8,7 @@ import {
   ScrollView,
   StatusBar,
 } from "react-native";
-import Placeholder from "../assets/dec.jpeg";
+import Placeholder from "../assets/Rec.png";
 import PlaceholderProfile from "../assets/endYear.jpeg";
 
 // create a component
@@ -17,7 +17,7 @@ const Profile = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar />
       <View style={styles.innerContainer}>
-        <Text style={{ textAlign: "center" }}>Profile</Text>
+        <Text style={{ textAlign: "center", fontSize: 18, padding: 20 }}>Profile</Text>
         <Image source={Placeholder} style={styles.headingProfile} />
         <View style={styles.profileImageContainer}>
           <Image source={PlaceholderProfile} style={styles.profileImage} />
@@ -54,6 +54,11 @@ const Profile = () => {
             </Text>
           </View>
         </View>
+
+        <View>
+          <Text>Logout</Text>
+          </View>
+
       </View>
     </ScrollView>
   );
@@ -90,8 +95,8 @@ const styles = StyleSheet.create({
     marginTop: -18,
   },
   detailItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 15,
     borderRadius: 10,
     justifyContent: "space-between",
     marginBottom: 15,
