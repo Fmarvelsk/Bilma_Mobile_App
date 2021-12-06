@@ -67,13 +67,11 @@ const Profile = () => {
 // define your styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     padding: 20,
     backgroundColor: "#e5e5e5",
   },
-  innerContainer: {
-    flex: 1,
-  },
+  
   headingProfile: {
     borderRadius: 10,
     height: 144,
@@ -104,6 +102,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
   },
+  innerContainer: {flex: 1},
   itemLeft: {
     width: "50%",
     paddingLeft: 8,
