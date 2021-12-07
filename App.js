@@ -8,10 +8,11 @@ import { ErrorHandler } from './src/utils/HandleError';
 import Profile from './src/screens/Profile';
 import HomeStack from './src/screens/HomeStack';
 import { Provider } from "react-redux";
-import { store, persistor } from "./src/store";
+import { store } from "./src/store";
+import Favourite from './src/screens/Favourite';
 
 export default function App() {
-  const [user, setUser] = useState(false)
+  const [user, setUser] = useState(true)
   const Stack = createNativeStackNavigator()
   const Tab = createBottomTabNavigator()
 
@@ -26,7 +27,7 @@ export default function App() {
                 headerShown: false
               }}
               name="Access"
-              children={() => <AccessScreen setUser={setUser} />}
+              children={(props) => <AccessScreen {...props} setUser={setUser} />}
             />
           </Stack.Navigator> :
 
@@ -44,9 +45,25 @@ export default function App() {
               children={() => <HomeStack/>}
             />
             <Tab.Screen
-              name="Favourite" component={Profile} />
+            options={{
+              headerShown: false,
+              tabBarLabel:"Favourite",
+              tabBarIcon: ({size, focused}) => (
+                <Image source={require('./src/assets/favourite.png') }/>
+              )
+            }}
+           
+              name="Favourite" component={Favourite} />
             <Tab.Screen
-              name="Profile" component={Profile} />
+              name="Profile" 
+              options={{
+                headerShown: false,
+                tabBarLabel:"Profile",
+                tabBarIcon: ({size, focused}) => (
+                  <Image source={require('./src/assets/user.png') }/>
+                )
+              }}
+              component={Profile} />
 
           </Tab.Navigator> 
           
