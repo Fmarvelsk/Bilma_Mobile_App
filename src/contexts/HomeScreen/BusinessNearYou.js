@@ -35,9 +35,6 @@ export default function BusinessNearYou() {
                 <View style={{ marginTop: 20 }}>
                     <Image style={styles.offer} source={endYear} />
                 </View>
-                <View style={{ marginTop: 20 }}>
-                    <Image style={styles.offer} source={"gs://kilonta-cfd5e.appspot.com/WhatsApp Image 2021-12-01 at 18.42.12.jpeg"} />
-                </View>
            
             </View>
         </View>

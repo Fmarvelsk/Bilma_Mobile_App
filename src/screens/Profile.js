@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#e5e5e5",
+    //backgroundColor: "#e5e5e5",
   },
   innerContainer: {
     flex: 1,
