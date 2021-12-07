@@ -42,7 +42,7 @@ export default function Category({ navigation }) {
                     <Header>
                         Recommeded
                     </Header>
-                    <TouchableWithoutFeedback onPress={() => navigation.push('CategoryId')}>
+                    <TouchableWithoutFeedback onPress={() => navigation.push('BusinessProfile')}>
                         <View style={style.category} >
                             <Image style={style.img_prop} source={pic} />
                             <View style={style.pos}>

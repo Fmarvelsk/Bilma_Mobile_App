@@ -31,7 +31,7 @@ const BusinessProfile = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <ScrollView style={{ backgroundColor: "#fff", position: "relative" }}>
+      <ScrollView style={{ backgroundColor: "#fff", paddingTop:20, position: "relative" }}>
         <StatusBar translucent />
         <View style={styles.container}>
           <View style={styles.backgroundImageContainer}>
