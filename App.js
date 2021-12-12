@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Image, View } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import { Image, View, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import { store, persistor } from "./src/store";
 import { useFonts } from "expo-font";
 import BusinessProfile from "./src/screens/BusinessProfile";
+import Favourite from "./src/screens/Favourite";
 
 export default function App() {
   const [user, setUser] = useState(false);
@@ -21,6 +22,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
+  LogBox.ignoreLogs(['Setting a timer for a long period of time'])
   if (!fontsLoaded) {
     return <View />;
   } else {
@@ -53,8 +55,26 @@ export default function App() {
                     }}
                     children={() => <HomeStack />}
                   />
-                  <Tab.Screen name="Favourite" component={Profile} />
-                  <Tab.Screen name="Profile" component={Profile} />
+                  <Tab.Screen
+                    options={{
+                      headerShown: false,
+                      tabBarLabel: "Favourite",
+                      tabBarIcon: ({ size, focused }) => (
+                        <Image source={require('./src/assets/favourite.png')} />
+                      )
+                    }}
+
+                    name="Favourite" component={Favourite} />
+                  <Tab.Screen
+                    name="Profile"
+                    options={{
+                      headerShown: false,
+                      tabBarLabel: "Profile",
+                      tabBarIcon: ({ size, focused }) => (
+                        <Image source={require('./src/assets/user.png')} />
+                      )
+                    }}
+                    component={Profile} />
                 </Tab.Navigator>
               </>
             )}

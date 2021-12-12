@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, SafeAreaView } from "react-native";
 import { Rating } from "react-native-ratings";
 
-const STAR = require('../assets/star.png')
+const STAR = require('../assets/favourite.png')
 
 export default function Favourite({ navigation }) {
     const [loading, setLoading] = useState(false)
@@ -30,11 +30,12 @@ export default function Favourite({ navigation }) {
                                     <Rating
                                         type="custom"
                                         imageSize={16}
+                                        startingValue={2}
                                         ratingImage={STAR}
                                         style={{ paddingVertical: 10, left: -4 }}
                                         ratingBackgroundColor="#f4f4f4"
                                         ratingColor="blue"
-                                        ratingCount={1}
+                                        ratingCount={4}
                                         readonly={true}
                                     />
                                     <Text>4.6</Text>

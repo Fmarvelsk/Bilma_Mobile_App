@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "bilma",
-    "slug": "bilma",
+    "name": "Kilonta",
+    "slug": "kilonta",
     "version": "1.0.0",
+    "description": "An advert app for domestic business",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "splash": {
@@ -13,6 +14,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
+    
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -20,6 +22,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package" : "com.fmarvelsk.kilonta",
+      "versionCode" : 1,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -27,6 +31,14 @@
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ]
   }
 }

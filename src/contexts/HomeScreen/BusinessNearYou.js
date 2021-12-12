@@ -1,16 +1,29 @@
 import React from "react";
 import { View, Image, ScrollView, StyleSheet, Dimensions } from "react-native";
 import Header from "../../component/Header";
-import poster from '../../assets/poster.png'
+import sweet from "../../assets/sweet.jpeg"
 import CustomImage from "../../component/CustomImage";
 import jaypee from "../../assets/jaypee.jpeg"
-import dec from "../../assets/dec.jpeg"
 import endYear from "../../assets/endYear.jpeg"
+import dec from "../../assets/dec.jpeg"
+import lush from "../../assets/lush.jpg"
 
 const { width } = Dimensions.get("window")
 const height = width * 0.5
 
-const image = [poster, jaypee, dec]
+const image = [{
+   id: 'yFrmi9QaAKw1Eg388Ddb',
+    img: sweet
+},{
+     id : 'EoqryJ9g6z0U7bALkQpA',
+     img: jaypee
+},
+{
+    id: 'xNlKLYGa25o8XicijR2M',
+    img: lush 
+
+}
+]
 
 export default function BusinessNearYou() {
     return (

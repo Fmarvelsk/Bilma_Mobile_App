@@ -20,7 +20,7 @@ export default function CustomImage({ src, url, text, navigation }) {
                 (<TouchableWithoutFeedback>
                     <View style={styles.text}>
 
-                        <Image source={src} style={styles.Nearimage} />
+                        <Image source={src.img} style={styles.Nearimage} />
                     </View>
                 </TouchableWithoutFeedback>)}
         </>)

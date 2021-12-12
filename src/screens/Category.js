@@ -1,6 +1,15 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, SafeAreaView } from "react-native";
+import {
+View,
+Text,
+StyleSheet,
+FlatList,
+Image,
+ActivityIndicator,
+SafeAreaView,
+TouchableWithoutFeedback
+} from "react-native";
 import HomeHeaderView from "../component/HomeHeaderView";
 import Header from '../component/Header'
 import pic from '../assets/pic.png'
@@ -18,7 +27,7 @@ export default function Category({ navigation }) {
     const fetchCategory = useCallback(async () => {
         setLoading(true)
         try {
-            await db.collection('data').where('Category', '==', `${category}`)
+            await db.collection('data').where('category', '==', `${category}`)
                 .get().then((snapshot) => {
                     let data = snapshot.docs.map((snap) => {
                         const result = snap.data()
@@ -45,52 +54,61 @@ export default function Category({ navigation }) {
                 (
 
 
-                        <FlatList
-                              ListHeaderComponent={() => <HomeHeaderView navigation={navigation} header/>}
-                            nestedScrollEnabled
-                            style={{backgroundColor: '#fff'}}
-                            data={categoryList}
-                            renderItem={({ item, index }) => (
-                                <View style={{paddingLeft: 50}}>
-                                <View style={style.favcon}>
-                                    <View style={{ flexDirection: 'row', paddingVertical: 20, position: 'relative' }}>
-                                        <Image style={style.fav} source={{ uri: 'https://www.superprof.ng/images/teachers/teacher-home-interactive-illustrative-teachings-with-complex-subjects-made-basic-possible-anatomy-and-physiology-for-basic-medical.jpg' }} />
-                                        <View style={{ lineHeight: 10, width: '55%' }}>
-                                            <Text style={{ fontSize: 16, fontWeight: '500', paddingBottom: 3 }}>Brooklyn Simmons</Text>
-                                            <Text style={{ fontSize: 14, fontWeight: '100', color: '#808080', paddingBottom: 20 }}>Tutor</Text>
-                    
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                <View>
-                                                    <Text>Rating</Text>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                        <Rating
-                                                            type="custom"
-                                                            imageSize={16}
-                                                            ratingImage={STAR}
-                                                            style={{ paddingVertical: 10, left: -4 }}
-                                                            ratingBackgroundColor="#f4f4f4"
-                                                            ratingColor="blue"
-                                                            ratingCount={1}
-                                                            readonly={true}
-                                                        />
-                                                        <Text>4.6</Text>
-                    
+                    <FlatList
+                        ListHeaderComponent={() => <HomeHeaderView navigation={navigation} header />}
+                        nestedScrollEnabled
+                        style={{ backgroundColor: '#fff' }}
+                        data={categoryList}
+                        renderItem={({ item, index }) => (
+                            <TouchableWithoutFeedback key={index} onPress={() => navigation.push('BusinessProfile', item.id
+                            )}>
+                                <View style={{ paddingLeft: 50 }}>
+                                    <View style={style.favcon}>
+                                        <View style={{ flexDirection: 'row', paddingVertical: 20, position: 'relative' }}>
+                                            <Image style={style.fav} source={{ uri: `${item.result.image}` }} />
+                                            <View style={{ lineHeight: 10, width: '55%' }}>
+                                                <Text style={{ fontSize: 16, fontWeight: '500', paddingBottom: 3 }}>{item.result.name}</Text>
+                                                <Text style={{ fontSize: 14, fontWeight: '100', color: '#808080', paddingBottom: 20 }}>{item.result.category}</Text>
+
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                    <View>
+                                                        <Text>Rating</Text>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                            <Rating
+                                                                type="custom"
+                                                                imageSize={16}
+                                                                ratingImage={STAR}
+                                                                style={{ paddingVertical: 10, left: -4 }}
+                                                                ratingBackgroundColor="#f4f4f4"
+                                                                ratingColor="blue"
+                                                                ratingCount={1}
+                                                                readonly={true}
+                                                            />
+                                                            <Text>{item.result.rating || 'No review'}</Text>
+
+                                                        </View>
                                                     </View>
+                                                    {item.result.rate ?
+                                                        (<View>
+                                                            <Text>Hourly Rate</Text>
+                                                            <Text>{item.result.rate}</Text>
+                                                        </View>) : (
+                                                            <View>
+                                                                <Text>Phone no</Text>
+                                                                <Text>{item.result.phoneNumber || ''}</Text>
+                                                            </View>
+                                                        )}
+
                                                 </View>
-                                                
-                                            <View>
-                                                <Text>Hourly Rate</Text>
-                                                </View>
-                    
+
                                             </View>
-                    
                                         </View>
                                     </View>
                                 </View>
-                                </View>
-                            )}
+                            </TouchableWithoutFeedback>
+                        )}
 
-                        />
+                    />
 
                 )
                 : (<View style={{ flex: 1, justifyContent: "center" }}><ActivityIndicator size="large" color="#0000ff" />
@@ -100,7 +118,7 @@ export default function Category({ navigation }) {
 }
 
 const style = StyleSheet.create({
-  
+
     fav: {
         width: 120,
         height: 120,
@@ -110,6 +128,7 @@ const style = StyleSheet.create({
     favcon: {
         marginTop: 40,
         backgroundColor: '#F4F4F4',
-        borderRadius: 10
-    }, 
+        borderRadius: 10,
+        //height: 180
+    },
 })
