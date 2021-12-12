@@ -8,11 +8,11 @@ import {
     View,
     Image,
     TouchableOpacity,
-    ActivityIndicator
+    ActivityIndicator,
+    TouchableWithoutFeedback,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker'
-import { auth, db } from '../../firebase';
-
+import * as ImagePicker from 'expo-image-picker';
+import { storage, auth, db } from '../../firebase'
 
 export default function SignUpProfile({ setSignUp }) {
     const [email, setEmail] = useState("")
@@ -24,6 +24,8 @@ export default function SignUpProfile({ setSignUp }) {
     const [address, setAddress] = useState("")
     const [errorMsg, setErrorMsg] = useState('')
     const [loading, setLoading] = useState(false)
+    const [photo, setPhoto] = useState();
+    const [photoLoading, setPhotoLoading] = useState(false)
 
     function createUser() {
         setErrorMsg('')
@@ -32,25 +34,72 @@ export default function SignUpProfile({ setSignUp }) {
         setLoading(true)
 
         auth.createUserWithEmailAndPassword(email, password)
-            .then(async (userCredential) => {
-                // Signed in 
-                await db.collection('profiles').doc(userCredential.uid).set({
-                    email : email,
-                    Name : fullName,
-                    phoneNumber : phoneNumber,
-                    businessType : businessType || '',
-                    address : address || '',
+            .then((userCredential) => {
+                console.log(userCredential)
+                return db.collection('profiles').doc(userCredential.uid).set({
+                    email: email,
+                    Name: fullName,
+                    phoneNumber: phoneNumber,
+                    businessType: businessType || '',
+                    address: address || '',
+                    image : photo
                 })
-                setSignUp(1) 
                 // ...
-            })
+            }).then(() => setSignUp(1))
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 // ..
             });
     }
+    async function handleChoosePhoto() {
+        if (Platform.OS !== 'web') {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted')
+                return alert('Sorry, we need camera roll permissions to make this work!');
+        }
 
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 4],
+            quality: 1,
+        });
+
+
+        if (!result.cancelled) {
+            sendToStorage(result.uri)
+        };
+
+    }
+        async function sendToStorage(uri) {
+            const metadata = {
+                contentType: 'image/jpeg'
+            };
+            try {
+               // setPhoto(result)
+                const response = await fetch(uri);
+                const blob = await response.blob();
+                const imgName = uri.slice(-10)
+                const uploadTask = storage.ref().child('images/' + `userProfileId ${imgName}`).put(blob, metadata);
+                uploadTask.on('state_changed',
+                     (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        if(progress === 100){
+                         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            console.log('File available at', downloadURL);
+                            setPhoto(downloadURL)
+                        });
+                    }
+                    }
+                );
+            }
+            catch (err) {
+                console.log(err)
+            }
+            
+            console.log('end')
+      }
 
     return (
         <>
@@ -60,6 +109,22 @@ export default function SignUpProfile({ setSignUp }) {
                         Register An Account
 
                     </Text>
+
+                    <TouchableWithoutFeedback>
+                        <View style={{ position: 'relative' }}>
+
+                            <Image
+                                source={{
+                                    uri: photo ? photo :
+                                        'https://monstar-lab.com/global/wp-content/uploads/sites/11/2019/04/male-placeholder-image-300x300.jpeg'
+                                }}
+                                style={styles.profileImage} />
+                            <TouchableOpacity style={{ position: 'absolute', bottom: 0, left: 40, width: 80, height: 80 }} title="Choose Photo" onPress={handleChoosePhoto}>
+                                <Text style={{ opacity: 0 }}>upload</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableWithoutFeedback>
+
                     <View style={styles.login}>
                         <TextInput
                             style={styles.input}
@@ -125,7 +190,7 @@ export default function SignUpProfile({ setSignUp }) {
                                 <TextInput
                                     style={styles.input}
                                     onChangeText={text => setFullName(text)}
-                                    placeholder="Name"
+                                    placeholder="Name Or Name of Business"
                                 />
                             </View>
                             <View style={styles.login}>
@@ -203,7 +268,7 @@ export default function SignUpProfile({ setSignUp }) {
                         <TouchableOpacity style={styles.btnView} onPress={() => setSelectedValue('user')}>
 
                             <Text
-                                style={styles.loginText}>USER</Text>
+                                style={styles.loginText}>BUYER</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.btnView} onPress={() => setSelectedValue('merchant')}>
@@ -211,7 +276,7 @@ export default function SignUpProfile({ setSignUp }) {
                             <Text
                                 style={styles.loginText}
 
-                            >BUSINESS</Text>
+                            >SELLER</Text>
                         </TouchableOpacity>
                     </>
                     )
@@ -230,6 +295,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 20,
 
+    },
+    profileImage: {
+        margin: 10,
+        height: 100,
+        width: 100,
+        borderRadius: 100 / 2,
+        borderWidth: 1,
+        borderColor: 'black',
     },
     loginText: {
         color: '#fff'

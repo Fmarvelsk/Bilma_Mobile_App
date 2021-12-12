@@ -14,8 +14,11 @@ import { Picker } from '@react-native-picker/picker'
 import { LinearGradient } from 'expo-linear-gradient';
 import { auth } from '../firebase';
 import SignUpProfile from '../contexts/HomeScreen/Signup';
+import { saveUserId } from '../store/action';
+import { useNavigation } from '@react-navigation/core';
 
-export default function AccessScreen({ navigation, setUser }) {
+
+export default function AccessScreen({ setUser }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [fullName, setFullName] = useState("")
@@ -23,21 +26,24 @@ export default function AccessScreen({ navigation, setUser }) {
   const [selectedValue, setSelectedValue] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigation()
 
   function authenticateUser() {
     setErrorMsg('')
-    if (email.length === 0 || password.length === 0) 
+    if (email.length === 0 || password.length === 0)
       return setErrorMsg("Field cannot be empty")
-      setLoading(true)
-       
+    setLoading(true)
     auth.signInWithEmailAndPassword(email, password).then(auth => {
-       setUser(true)
-        
+      saveUserId(auth.user.uid)
+      navigate.navigate('HomeStack')
+      setUser(true)
+      console.log(auth.user.uid)
     }).catch(err => {
-      console.log(err) 
+      console.log(err)
       setLoading(false)
-      setErrorMsg('Invalid Credentials')})
-   
+      setErrorMsg('Invalid Credentials')
+    })
+
   }
 
 
@@ -45,74 +51,74 @@ export default function AccessScreen({ navigation, setUser }) {
     <LinearGradient colors={['#F5F5F573', '#D7D7D780']} style={styles.container}>
       {signUp === 2 ?
         (
-          <SignUpProfile setSignUp={setSignUp}/>
+          <SignUpProfile setSignUp={setSignUp} />
         )
         : signUp === 1 ?
-        (<>
-          <Text style={styles.headerText}>Welcome To Kilonta!</Text>
-          <Image style={{
-            marginBottom: 30
-          }} source={require('../assets/profile.png')} />
-          <View style={styles.login}>
-            <TextInput
-              style={styles.input}
-              onChangeText={text => setEmail(text)}
-              placeholder="Email"
-              value={email}
-            />
-          </View>
-          <View style={styles.login}>
-            <TextInput
-              onChangeText={text => setPassword(text)}
-              style={styles.input}
-              placeholder="Password"
-              secureTextEntry={true}
-            />
-          </View>
-          {!loading ? (<TouchableOpacity
-            style={styles.btnView}
-            onPress={authenticateUser}>
-            <Text style={styles.loginText}>LOGIN</Text>
-          </TouchableOpacity>)
-            : (<>
-            <ActivityIndicator size="small" color="#0000ff" />
-            <Text>Loading.....</Text>
-            </>)}
+          (<>
+            <Text style={styles.headerText}>Welcome To Kilonta!</Text>
+            <Image style={{
+              marginBottom: 30
+            }} source={require('../assets/profile.png')} width={100} height={100}/>
+            <View style={styles.login}>
+              <TextInput
+                style={styles.input}
+                onChangeText={text => setEmail(text)}
+                placeholder="Email"
+                value={email}
+              />
+            </View>
+            <View style={styles.login}>
+              <TextInput
+                onChangeText={text => setPassword(text)}
+                style={styles.input}
+                placeholder="Password"
+                secureTextEntry={true}
+              />
+            </View>
+            {!loading ? (<TouchableOpacity
+              style={styles.btnView}
+              onPress={authenticateUser}>
+              <Text style={styles.loginText}>LOGIN</Text>
+            </TouchableOpacity>)
+              : (<>
+                <ActivityIndicator size="small" color="#0000ff" />
+                <Text>Loading.....</Text>
+              </>)}
 
-          <TouchableOpacity onPress={() => setSignUp(3)}>
+            <TouchableOpacity onPress={() => setSignUp(3)}>
+              <Text style={{
+                height: 30,
+                marginTop: 10,
+
+              }}> Forgot Password ?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={{
+                height: 30,
+                marginTop: 10,
+              }}
+                onPress={() => setSignUp(2)}
+              > Dont have an Account? Register </Text>
+            </TouchableOpacity>
             <Text style={{
-              height: 30,
-              marginTop: 10,
-
-            }}> Forgot Password ?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={{
-              height: 30,
-              marginTop: 10,
-            }}
-              onPress={() => setSignUp(2)}
-            > Dont have an Account? Register </Text>
-          </TouchableOpacity>
-          <Text style={{
-            color: 'red'
-          }}>{errorMsg}</Text>
+              color: 'red'
+            }}>{errorMsg}</Text>
 
 
-          <StatusBar style="auto" />
-        </>) : 
-        signUp === 3 ? (<>
-          <Text style={styles.headerText}>
-         Forgot Password
-        </Text>
-        <View style={styles.login}>
-            <TextInput
-              style={styles.input}
-              onChange={text => setEmail(text)}
-              placeholder="email"
-            />
-          </View>
-      </>) : null}
+            <StatusBar style="auto" />
+          </>) :
+          signUp === 3 ? (<>
+            <Text style={styles.headerText}>
+              Forgot Password
+            </Text>
+            <View style={styles.login}>
+              <TextInput
+                style={styles.input}
+                onChange={text => setEmail(text)}
+                placeholder="email"
+              />
+            </View>
+          </>) : null}
     </LinearGradient>
   );
 }
