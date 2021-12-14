@@ -18,15 +18,15 @@ import { saveUserId } from '../store/action';
 import { useNavigation } from '@react-navigation/core';
 
 
-export default function AccessScreen({ setUser }) {
+export default function AccessScreen() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [fullName, setFullName] = useState("")
   const [signUp, setSignUp] = useState(1)
-  const [selectedValue, setSelectedValue] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigation()
+  
+  
 
   function authenticateUser() {
     setErrorMsg('')
@@ -35,10 +35,7 @@ export default function AccessScreen({ setUser }) {
     setLoading(true)
     auth.signInWithEmailAndPassword(email, password).then(auth => {
       saveUserId(auth.user.uid)
-      navigate.navigate('HomeStack')
-      setUser(true)
-      console.log(auth.user.uid)
-    }).catch(err => {
+     }).catch(err => {
       console.log(err)
       setLoading(false)
       setErrorMsg('Invalid Credentials')

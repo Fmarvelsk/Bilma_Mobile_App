@@ -78,9 +78,9 @@ export default function Category({ navigation }) {
                                                                 type="custom"
                                                                 imageSize={16}
                                                                 ratingImage={STAR}
-                                                                style={{ paddingVertical: 10, left: -4 }}
+                                                                style={{ left: -4 }}
                                                                 ratingBackgroundColor="#f4f4f4"
-                                                                ratingColor="blue"
+                                                               // ratingColor="blue"
                                                                 ratingCount={1}
                                                                 readonly={true}
                                                             />

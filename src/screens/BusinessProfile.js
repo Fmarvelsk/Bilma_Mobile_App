@@ -10,47 +10,150 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Linking
+  Linking,
+  Dimensions,
+  TextInput
 } from "react-native";
 import MIcons from "react-native-vector-icons/MaterialIcons";
-import BackgroundImg from "../assets/jaypee.jpeg";
+import { useDispatch, useSelector } from "react-redux";
 import { db } from "../firebase";
+import { addFavorite, saveUserFavourite } from "../store/action";
 
 
-const data = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-// create a component
+const { width } = Dimensions.get("window")
+const height = width * 5
 
 
 const BusinessProfile = ({ route }) => {
 
   const [categoryId, setCategoryId] = useState()
   const [loading, setLoading] = useState(false)
+  const { user, favourite, profile } = useSelector(s => s.rootReducer)
+  const dispatch = useDispatch()
+  const [save, setSaved] = useState()
+  const [isLoading, setIsLoading] = useState(false)
+  const [userReview, setUserReview] = useState([])
+  const [showReview, setShowReview] = useState(false)
+  const [loadingComment, setLoadingComment] = useState(false)
+  const [comment, setComment] = useState('')
+
+  console.log(profile)
 
   const fetchBusinessInformation = useCallback(async () => {
     try {
       await db.collection('data').doc(route.params)
-        .get().then(snap => {
+        .get().then(async snap => {
           setCategoryId(snap.data())
+          if (snap.data().reviews)
+            setUserReview(snap.data().reviews)
           setLoading(false)
-        })
 
+        })
     } catch (err) {
       console.log(err)
     }
-  }, [route])
+  }, [route, favourite])
+
+  //console.log(favourite)
+  useEffect(() => {
+    let res = favourite.find((fav) => fav.name === categoryId?.name)
+    setSaved(res)
+
+  }, [favourite, categoryId])
+
+  async function sendPushNotification(expoPushToken) {
+    const message = {
+      to: expoPushToken,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { someData: 'goes here' },
+    };
+
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  }
+  async function NotificationToUser() {
+    const res = await db.collection('profiles').get()
+    res.docs.map((user) => {
+      let data = user.data()
+      if (data.name === categoryId.name)
+        return sendPushNotification(data.token)
+    })
+  }
 
 
+  const addToFavorite = () => {
+    setIsLoading(true)
+    db.collection('profiles').doc(user).set({
+      favourite: [...favourite, categoryId]
+    }, { merge: true })
+      .then(res => {
+        dispatch(addFavorite(categoryId))
+        setIsLoading(false)
+
+      })
+      .catch(err => {
+        setIsLoading(false)
+        console.log(err, 'error')
+      })
+
+  }
+
+  async function addReviews() {
+    setLoadingComment(true)
+    let data = {
+      comment : comment,
+      date : "15/12/2021",
+      name : profile.name,
+      rating : 5
+    }
+    try {
+      await db.collection('data').doc(route.params)
+        .set({
+          reviews: [...userReview, data]
+        }, { merge: true })
+
+    }
+    catch (err) {
+      console.log(err)
+      setLoadingComment(false)
+    }
+    setLoadingComment(false)
+    setShowReview(true)
+  }
+
+  const removeFromFavourite = async () => {
+    setIsLoading(true)
+
+    const newFav = favourite.filter((item) => {
+      return item.name !== categoryId.name;
+    });
+    dispatch(saveUserFavourite(newFav))
+    await db.collection('profiles').doc(user).set({
+      favourite: [...newFav]
+    }, { merge: true })
+    setIsLoading(false)
+  }
   useEffect(() => {
     fetchBusinessInformation()
   }, [fetchBusinessInformation])
+
+  
   return (
     <>
       {categoryId && !loading ? (
         <View style={{ position: "relative" }}>
 
           <View style={styles.hireContainer}>
-            <TouchableOpacity style={styles.hireButton}>
+            <TouchableOpacity style={styles.hireButton} onPress={NotificationToUser}>
               <Text
                 style={{
                   color: "#fff",
@@ -61,11 +164,26 @@ const BusinessProfile = ({ route }) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <ScrollView style={{ backgroundColor: "#fff", paddingTop: 20, position: "relative" }}>
+          <ScrollView style={{ backgroundColor: "#fff", paddingTop: 20, position: "relative", height: height }}>
             <StatusBar translucent />
             <View style={styles.container}>
               <View style={styles.backgroundImageContainer}>
-                <Text style={styles.textBackgroundImage}>N 5000/hr</Text>
+
+                {!save && !isLoading ?
+                  <TouchableOpacity style={styles.textBackgroundImage} onPress={addToFavorite}>
+
+                    <Text style={{ color: 'blue' }}>Add to Favourite</Text>
+                  </TouchableOpacity>
+                  : save && !isLoading ?
+                    <TouchableOpacity style={styles.textBackgroundImage} onPress={removeFromFavourite}>
+
+                      <Text style={{ color: 'blue' }}>Remove from Favourite</Text>
+                    </TouchableOpacity>
+                    :
+                    <View style={styles.isLoading}>
+                      <ActivityIndicator size="large" color="#0000ff" />
+                    </View>
+                }
                 <Image source={{ uri: `${categoryId.image}` }} style={styles.backgroundImage} />
               </View>
               <Text style={styles.serviceName}>{categoryId.name}</Text>
@@ -83,7 +201,7 @@ const BusinessProfile = ({ route }) => {
                   color="#2d9cdb"
                   style={[styles.star, { marginRight: 4 }]}
                 />
-                <Text style={{ fontFamily: "Lato" }}>500 reviews</Text>
+                <Text style={{ fontFamily: "Lato" }}>{categoryId.rating} reviews</Text>
               </View>
               <View style={styles.horizontalLine} />
               <View style={styles.businessDetails}>
@@ -144,79 +262,124 @@ const BusinessProfile = ({ route }) => {
               </View>
               <View style={styles.horizontalLine} />
               <View style={styles.reviewContainer}>
-                <View style={{ flexDirection: "row", marginBottom: 16 }}>
-                  <Text style={{ fontFamily: "Lato_bold" }}>Reviews</Text>
-                  <Text style={{ marginLeft: 4, fontFamily: "Lato" }}>(500)</Text>
+                <View style={{ flexDirection: "row", justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ flexDirection: "row", marginBottom: 16 }}>
+                    <Text style={{ fontFamily: "Lato_bold" }}>Reviews</Text>
+                    <Text style={{ marginLeft: 4, fontFamily: "Lato" }}>{userReview.length}</Text>
+                  </View>
+
+                  <View>
+                    <TouchableOpacity style={{ width: '100%', backgroundColor: '#e8f1fe' }} onPress={() => setShowReview(true)}>
+                      <Text
+                        style={{
+                          color: "#2d9cdb",
+                          fontFamily: "Lato_bold",
+                          padding: 16,
+                        }}>
+                        Add Review
+                      </Text>
+                    </TouchableOpacity>
+
+                  </View>
                 </View>
-                <FlatList
-                  data={data}
-                  nestedScrollEnabled
-                  style={{ marginBottom: 48 }}
-                  keyExtractor={(item) => item.toString()}
-                  renderItem={() => (
-                    <View>
-                      <View style={styles.reviewHeader}>
-                        <View style={{ marginBottom: 8 }}>
-                          <Text style={{ fontFamily: "Lato_bold" }}>
-                            Wade Warren
-                          </Text>
-                          <View style={{ flexDirection: "row", marginTop: 2 }}>
-                            <MIcons
-                              name="stars"
-                              size={24}
-                              color="#2d9cdb"
-                              style={styles.star}
-                            />
-                            <MIcons
-                              name="stars"
-                              size={24}
-                              color="#2d9cdb"
-                              style={styles.star}
-                            />
-                            <MIcons
-                              name="stars"
-                              size={24}
-                              color="#2d9cdb"
-                              style={styles.star}
-                            />
-                            <MIcons
-                              name="stars"
-                              size={24}
-                              color="#2d9cdb"
-                              style={styles.star}
-                            />
-                            <MIcons
-                              name="stars"
-                              size={24}
-                              color="#2d9cdb"
-                              style={styles.star}
-                            />
+                {showReview &&
+                <>
+                  <View style={{borderWidth : 1, paddingHorizontal: 10, marginVertical : 10}}>
+                    <TextInput
+                      multiline={true}
+                      numberOfLines={5}
+                      onChangeText={text => setComment(text)}
+                      style={styles.desc}
+                    //placeholder="Description of business"
+
+                    />
+
+                  </View>
+                  <View style={{alignContent : 'flex-end', alignItems : 'flex-end', alig }}>
+                    {!loadingComment ?
+                  <TouchableOpacity style={{ width: '50%', backgroundColor: '#e8f1fe', }} onPress={addReviews}>
+                      <Text
+                        style={{
+                          color: "#2d9cdb",
+                          fontFamily: "Lato_bold",
+                          padding: 16,
+                        }}>
+                        Add Reviews
+                      </Text>
+                    </TouchableOpacity>
+                    : <ActivityIndicator size="large" color="#0000ff"/>}
+                    </View>
+                  </>
+                  }
+                {userReview.length > 0 ?
+                  <FlatList
+                    data={userReview}
+                    nestedScrollEnabled
+                    style={{ marginBottom: 48 }}
+                    // keyExtractor={(item) => item.toString()}
+                    renderItem={({ item, index }) => (
+                      <View key={index}>
+                        <View style={styles.reviewHeader}>
+                          <View style={{ marginBottom: 8 }}>
+                            <Text style={{ fontFamily: "Lato_bold" }}>
+                              {item.name}
+                            </Text>
+                            <View style={{ flexDirection: "row", marginTop: 2 }}>
+                              <MIcons
+                                name="stars"
+                                size={24}
+                                color="#2d9cdb"
+                                style={styles.star}
+                              />
+                              <MIcons
+                                name="stars"
+                                size={24}
+                                color="#2d9cdb"
+                                style={styles.star}
+                              />
+                              <MIcons
+                                name="stars"
+                                size={24}
+                                color="#2d9cdb"
+                                style={styles.star}
+                              />
+                              <MIcons
+                                name="stars"
+                                size={24}
+                                color="#2d9cdb"
+                                style={styles.star}
+                              />
+                              <MIcons
+                                name="stars"
+                                size={24}
+                                color="#2d9cdb"
+                                style={styles.star}
+                              />
+                            </View>
                           </View>
+                          <Text
+                            style={{
+                              color: "#888",
+                              fontSize: 12,
+                              fontFamily: "Lato",
+                            }}>
+                            {item.date}
+                          </Text>
                         </View>
                         <Text
                           style={{
-                            color: "#888",
-                            fontSize: 12,
+                            marginTop: 4,
+                            lineHeight: 21,
                             fontFamily: "Lato",
+                            marginBottom: 20
                           }}>
-                          April 10th, 2022
-                        </Text>
+                          {item.comment}</Text>
                       </View>
-                      <Text
-                        style={{
-                          marginTop: 4,
-                          lineHeight: 21,
-                          fontFamily: "Lato",
-                          marginBottom: 16,
-                        }}>
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                        Corporis accusamus, nisi quasi possimus aliquid maxime
-                        numquam beatae harum quam, pariatur fugiat. Officia eum
-                        minima nesciunt aliquam neque iste voluptatum obcaecati?
-                      </Text>
-                    </View>
-                  )}
-                />
+                    )}
+                  />
+                  : <View>
+                    <Text>No review</Text>
+                  </View>}
               </View>
             </View>
           </ScrollView>
@@ -244,6 +407,15 @@ const styles = StyleSheet.create({
   },
   backgroundImageContainer: {
     position: "relative",
+
+  },
+  isLoading: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    zIndex: 2,
+    paddingHorizontal: 24,
+    paddingVertical: 8,
 
   },
   textBackgroundImage: {
@@ -309,9 +481,10 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   hireContainer: {
-    width: "100%",
+    width: "50%",
     position: "absolute",
-    bottom: 24,
+    bottom: 10,
+    right: 0,
     alignItems: "center",
     zIndex: 3,
   },
