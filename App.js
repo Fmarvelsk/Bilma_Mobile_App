@@ -6,25 +6,23 @@ import { store, persistor } from "./src/store";
 import { useFonts } from "expo-font";
 import MobileIndex from "./src";
 
-
 export default function App() {
   const [userAuth, setUserAuth] = useState(false);
- // const {user}  = useSelector(s => s.rootReducer)
+  // const {user}  = useSelector(s => s.rootReducer)
 
   const [fontsLoaded] = useFonts({
     Lato: require("./src/assets/fonts/Lato-Regular.ttf"),
     Lato_bold: require("./src/assets/fonts/Lato-Bold.ttf"),
   });
 
-
-  LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+  LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
   if (!fontsLoaded) {
     return <View />;
   } else {
     return (
       <Provider store={store}>
         <ErrorHandler>
-          <MobileIndex/>
+          <MobileIndex />
         </ErrorHandler>
       </Provider>
     );

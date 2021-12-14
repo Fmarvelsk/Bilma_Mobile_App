@@ -21,7 +21,7 @@ import { addFavorite, saveUserFavourite } from "../store/action";
 
 
 const { width } = Dimensions.get("window")
-const height = width * 5
+const height = width * 4
 
 
 const BusinessProfile = ({ route }) => {
@@ -36,8 +36,7 @@ const BusinessProfile = ({ route }) => {
   const [showReview, setShowReview] = useState(false)
   const [loadingComment, setLoadingComment] = useState(false)
   const [comment, setComment] = useState('')
-
-  console.log(profile)
+  const [loadingNotify, setLoadingNotify] = useState(false)
 
   const fetchBusinessInformation = useCallback(async () => {
     try {
@@ -62,11 +61,12 @@ const BusinessProfile = ({ route }) => {
   }, [favourite, categoryId])
 
   async function sendPushNotification(expoPushToken) {
+    setLoadingNotify(true)
     const message = {
       to: expoPushToken,
       sound: 'default',
-      title: 'Original Title',
-      body: 'And here is the body!',
+      title: 'Request for quote',
+      body: `${profile.name} has requested for a quote!`,
       data: { someData: 'goes here' },
     };
 
@@ -79,12 +79,12 @@ const BusinessProfile = ({ route }) => {
       },
       body: JSON.stringify(message),
     });
+    setLoadingNotify(false)
   }
   async function NotificationToUser() {
     const res = await db.collection('profiles').get()
-    res.docs.map((user) => {
+    res.docs.map((user) => { 
       let data = user.data()
-      if (data.name === categoryId.name)
         return sendPushNotification(data.token)
     })
   }
@@ -150,21 +150,24 @@ const BusinessProfile = ({ route }) => {
   return (
     <>
       {categoryId && !loading ? (
-        <View style={{ position: "relative" }}>
+        <View style={{ position: "relative",  backgroundColor: "#fff" }}>
 
           <View style={styles.hireContainer}>
-            <TouchableOpacity style={styles.hireButton} onPress={NotificationToUser}>
+
+            {loadingNotify ? 
+          <ActivityIndicator size="large" color="#0000ff" />
+           : <TouchableOpacity style={styles.hireButton} onPress={NotificationToUser}>
               <Text
                 style={{
                   color: "#fff",
                   fontFamily: "Lato_bold",
                   paddingVertical: 16,
                 }}>
-                Hire now
+                Send a Notification
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> }
           </View>
-          <ScrollView style={{ backgroundColor: "#fff", paddingTop: 20, position: "relative", height: height }}>
+          <ScrollView style={{ backgroundColor: "#fff", paddingVertical: 25, position: "relative", height:  'auto' }}>
             <StatusBar translucent />
             <View style={styles.container}>
               <View style={styles.backgroundImageContainer}>
@@ -184,7 +187,9 @@ const BusinessProfile = ({ route }) => {
                       <ActivityIndicator size="large" color="#0000ff" />
                     </View>
                 }
-                <Image source={{ uri: `${categoryId.image}` }} style={styles.backgroundImage} />
+                <Image source={{ uri: categoryId.image ? `${categoryId.image}` 
+                : 'https://ninejars.co.uk/wp-content/uploads/2020/11/placeholder-profile-male.jpg' 
+                }} style={styles.backgroundImage} />
               </View>
               <Text style={styles.serviceName}>{categoryId.name}</Text>
               <View
@@ -269,7 +274,7 @@ const BusinessProfile = ({ route }) => {
                   </View>
 
                   <View>
-                    <TouchableOpacity style={{ width: '100%', backgroundColor: '#e8f1fe' }} onPress={() => setShowReview(true)}>
+                    <TouchableOpacity style={{ width: '70%', backgroundColor: '#e8f1fe', textAlign : 'center' }} onPress={() => setShowReview(true)}>
                       <Text
                         style={{
                           color: "#2d9cdb",
@@ -295,7 +300,7 @@ const BusinessProfile = ({ route }) => {
                     />
 
                   </View>
-                  <View style={{alignContent : 'flex-end', alignItems : 'flex-end', alig }}>
+                  <View style={{alignContent : 'flex-end', alignItems : 'flex-end' }}>
                     {!loadingComment ?
                   <TouchableOpacity style={{ width: '50%', backgroundColor: '#e8f1fe', }} onPress={addReviews}>
                       <Text

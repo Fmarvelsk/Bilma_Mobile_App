@@ -11,29 +11,29 @@ import Favourite from "./screens/Favourite";
 import { db } from "./firebase";
 import { saveUser } from "./store/action";
 
-
 export default function MobileIndex() {
-  const { user } = useSelector(s => s.rootReducer)
-  const dispatch = useDispatch()
+  const { user } = useSelector((s) => s.rootReducer);
+  const dispatch = useDispatch();
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
 
   const fetchUserProfile = useCallback(async () => {
-
     try {
-      await db.collection('profiles').doc(user)
-        .get().then(snap => {
-          dispatch(saveUser(snap.data()))
-        })
+      await db
+        .collection("profiles")
+        .doc(user)
+        .get()
+        .then((snap) => {
+          dispatch(saveUser(snap.data()));
+        });
+    } catch (err) {
+      console.log(err);
     }
-    catch (err) {
-      console.log(err)
-    }
-  }, [user])
+  }, [user]);
 
   useEffect(() => {
-    fetchUserProfile()
-  }, [fetchUserProfile])
+    fetchUserProfile();
+  }, [fetchUserProfile]);
 
   return (
     <NavigationContainer>
@@ -49,8 +49,7 @@ export default function MobileIndex() {
         </Stack.Navigator>
       ) : (
         <>
-          <Tab.Navigator /*tabBar={(props) => <CustomBottomNav {...props} />}*/
-          >
+          <Tab.Navigator /*tabBar={(props) => <CustomBottomNav {...props} />}*/>
             <Tab.Screen
               name="HomeStack"
               options={{
@@ -67,21 +66,23 @@ export default function MobileIndex() {
                 headerShown: false,
                 tabBarLabel: "Favourite",
                 tabBarIcon: ({ size, focused }) => (
-                  <Image source={require('./assets/favourite.png')} />
-                )
+                  <Image source={require("./assets/favourite.png")} />
+                ),
               }}
-
-              name="Favourite" component={Favourite} />
+              name="Favourite"
+              component={Favourite}
+            />
             <Tab.Screen
               name="Profile"
               options={{
                 headerShown: false,
                 tabBarLabel: "Profile",
                 tabBarIcon: ({ size, focused }) => (
-                  <Image source={require('./assets/user.png')} />
-                )
+                  <Image source={require("./assets/user.png")} />
+                ),
               }}
-              component={Profile} />
+              component={Profile}
+            />
           </Tab.Navigator>
         </>
       )}

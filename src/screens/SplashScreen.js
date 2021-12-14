@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 //import Bubble from "./bubble";
 const SplashScreen = ({ navigation }) => {
-  
   return (
     <View style={styles.container}>
-  {/*    <Bubble length={120} />
+      {/*    <Bubble length={120} />
       <Bubble length={20} neg />
   <Bubble length={80} />*/}
 
       <Text
-        style={{ fontSize: 24, color: "white", fontFamily: "Poppins_medium" }}>
-      Kilonta
+        style={{ fontSize: 24, color: "white", fontFamily: "Poppins_medium" }}
+      >
+        Kilonta
       </Text>
     </View>
   );
