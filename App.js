@@ -4,7 +4,7 @@ import { ErrorHandler } from "./src/utils/HandleError";
 import { Provider, useSelector } from "react-redux";
 import { store, persistor } from "./src/store";
 import { useFonts } from "expo-font";
-import MobileIndex from "./src";
+import SplashScreen from "./src/SplashScreen";
 
 
 export default function App() {
@@ -24,7 +24,7 @@ export default function App() {
     return (
       <Provider store={store}>
         <ErrorHandler>
-          <MobileIndex/>
+          <SplashScreen/>
         </ErrorHandler>
       </Provider>
     );

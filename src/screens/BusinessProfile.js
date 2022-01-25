@@ -12,12 +12,17 @@ import {
   ActivityIndicator,
   Linking,
   Dimensions,
-  TextInput
+  TextInput,
+
 } from "react-native";
+import { Rating } from "react-native-ratings";
 import MIcons from "react-native-vector-icons/MaterialIcons";
 import { useDispatch, useSelector } from "react-redux";
 import { db } from "../firebase";
 import { addFavorite, saveUserFavourite } from "../store/action";
+
+
+const STAR = require('../assets/star.png')
 
 
 const { width } = Dimensions.get("window")
@@ -36,8 +41,9 @@ const BusinessProfile = ({ route }) => {
   const [showReview, setShowReview] = useState(false)
   const [loadingComment, setLoadingComment] = useState(false)
   const [comment, setComment] = useState('')
+  const [loadingNotify, setLoadingNotify] = useState(false)
 
-  console.log(profile)
+  console.log(route.params)
 
   const fetchBusinessInformation = useCallback(async () => {
     try {
@@ -62,11 +68,12 @@ const BusinessProfile = ({ route }) => {
   }, [favourite, categoryId])
 
   async function sendPushNotification(expoPushToken) {
+    setLoadingNotify(true)
     const message = {
       to: expoPushToken,
       sound: 'default',
-      title: 'Original Title',
-      body: 'And here is the body!',
+      title: 'Request ',
+      body: `${profile.name} sent a request`,
       data: { someData: 'goes here' },
     };
 
@@ -79,24 +86,26 @@ const BusinessProfile = ({ route }) => {
       },
       body: JSON.stringify(message),
     });
+    setLoadingNotify(false)
   }
   async function NotificationToUser() {
     const res = await db.collection('profiles').get()
     res.docs.map((user) => {
       let data = user.data()
-      if (data.name === categoryId.name)
-        return sendPushNotification(data.token)
+      //if (data.name === categoryId.name)
+      return sendPushNotification(data.token)
     })
   }
 
 
   const addToFavorite = () => {
     setIsLoading(true)
+    /*dispatch(addFavorite(categoryId))*/
+
     db.collection('profiles').doc(user).set({
-      favourite: [...favourite, categoryId]
+      favourite: [...favourite]
     }, { merge: true })
       .then(res => {
-        dispatch(addFavorite(categoryId))
         setIsLoading(false)
 
       })
@@ -110,15 +119,15 @@ const BusinessProfile = ({ route }) => {
   async function addReviews() {
     setLoadingComment(true)
     let data = {
-      comment : comment,
-      date : "15/12/2021",
-      name : profile.name,
-      rating : 5
+      comment: comment,
+      date: "15/12/2021",
+      name: profile.name,
+      rating: 5
     }
     try {
       await db.collection('data').doc(route.params)
         .set({
-          reviews: [...userReview, data]
+         reviews: [...userReview, data]
         }, { merge: true })
 
     }
@@ -146,25 +155,29 @@ const BusinessProfile = ({ route }) => {
     fetchBusinessInformation()
   }, [fetchBusinessInformation])
 
-  
+
   return (
     <>
       {categoryId && !loading ? (
-        <View style={{ position: "relative" }}>
+        <View style={{ position: "relative", backgroundColor: "#fff" }}>
 
           <View style={styles.hireContainer}>
-            <TouchableOpacity style={styles.hireButton} onPress={NotificationToUser}>
-              <Text
-                style={{
-                  color: "#fff",
-                  fontFamily: "Lato_bold",
-                  paddingVertical: 16,
-                }}>
-                Hire now
-              </Text>
-            </TouchableOpacity>
+            {loadingNotify ?
+              <ActivityIndicator size="large" color="#0000ff" />
+              :
+              !loadingNotify && userReview.length > 0 ?
+                <TouchableOpacity style={styles.hireButton} onPress={NotificationToUser}>
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontFamily: "Lato_bold",
+                      paddingVertical: 16,
+                    }}>
+                    Send a Notification
+                  </Text>
+                </TouchableOpacity> : null}
           </View>
-          <ScrollView style={{ backgroundColor: "#fff", paddingTop: 20, position: "relative", height: height }}>
+          <ScrollView style={{ backgroundColor: "#fff", paddingTop: 20, position: "relative" }}>
             <StatusBar translucent />
             <View style={styles.container}>
               <View style={styles.backgroundImageContainer}>
@@ -184,7 +197,9 @@ const BusinessProfile = ({ route }) => {
                       <ActivityIndicator size="large" color="#0000ff" />
                     </View>
                 }
-                <Image source={{ uri: `${categoryId.image}` }} style={styles.backgroundImage} />
+                <Image source={{ uri: categoryId.image ? `${categoryId.image}` 
+                : 'https://ninejars.co.uk/wp-content/uploads/2020/11/placeholder-profile-male.jpg' 
+                }} style={styles.backgroundImage} />
               </View>
               <Text style={styles.serviceName}>{categoryId.name}</Text>
               <View
@@ -195,12 +210,6 @@ const BusinessProfile = ({ route }) => {
                   marginBottom: 8,
                   marginTop: 8,
                 }}>
-                <MIcons
-                  name="stars"
-                  size={24}
-                  color="#2d9cdb"
-                  style={[styles.star, { marginRight: 4 }]}
-                />
                 <Text style={{ fontFamily: "Lato" }}>{categoryId.rating} reviews</Text>
               </View>
               <View style={styles.horizontalLine} />
@@ -283,34 +292,34 @@ const BusinessProfile = ({ route }) => {
                   </View>
                 </View>
                 {showReview &&
-                <>
-                  <View style={{borderWidth : 1, paddingHorizontal: 10, marginVertical : 10}}>
-                    <TextInput
-                      multiline={true}
-                      numberOfLines={5}
-                      onChangeText={text => setComment(text)}
-                      style={styles.desc}
-                    //placeholder="Description of business"
+                  <>
+                    <View style={{ borderWidth: 1, paddingHorizontal: 10, marginVertical: 10 }}>
+                      <TextInput
+                        multiline={true}
+                        numberOfLines={5}
+                        onChangeText={text => setComment(text)}
+                        style={styles.desc}
+                      //placeholder="Description of business"
 
-                    />
+                      />
 
-                  </View>
-                  <View style={{alignContent : 'flex-end', alignItems : 'flex-end', alig }}>
-                    {!loadingComment ?
-                  <TouchableOpacity style={{ width: '50%', backgroundColor: '#e8f1fe', }} onPress={addReviews}>
-                      <Text
-                        style={{
-                          color: "#2d9cdb",
-                          fontFamily: "Lato_bold",
-                          padding: 16,
-                        }}>
-                        Add Reviews
-                      </Text>
-                    </TouchableOpacity>
-                    : <ActivityIndicator size="large" color="#0000ff"/>}
+                    </View>
+                    <View style={{ alignContent: 'flex-end', alignItems: 'flex-end' }}>
+                      {!loadingComment ?
+                        <TouchableOpacity style={{ width: '20%', backgroundColor: '#e8f1fe' }} onPress={addReviews}>
+                          <Text
+                            style={{
+                              color: "#2d9cdb",
+                              fontFamily: "Lato_bold",
+                              padding: 16,
+                            }}>
+                            Add
+                          </Text>
+                        </TouchableOpacity>
+                        : <ActivityIndicator size="large" color="#0000ff" />}
                     </View>
                   </>
-                  }
+                }
                 {userReview.length > 0 ?
                   <FlatList
                     data={userReview}
@@ -324,38 +333,18 @@ const BusinessProfile = ({ route }) => {
                             <Text style={{ fontFamily: "Lato_bold" }}>
                               {item.name}
                             </Text>
-                            <View style={{ flexDirection: "row", marginTop: 2 }}>
-                              <MIcons
-                                name="stars"
-                                size={24}
-                                color="#2d9cdb"
-                                style={styles.star}
-                              />
-                              <MIcons
-                                name="stars"
-                                size={24}
-                                color="#2d9cdb"
-                                style={styles.star}
-                              />
-                              <MIcons
-                                name="stars"
-                                size={24}
-                                color="#2d9cdb"
-                                style={styles.star}
-                              />
-                              <MIcons
-                                name="stars"
-                                size={24}
-                                color="#2d9cdb"
-                                style={styles.star}
-                              />
-                              <MIcons
-                                name="stars"
-                                size={24}
-                                color="#2d9cdb"
-                                style={styles.star}
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                              <Rating
+                                type="custom"
+                                imageSize={16}
+                                ratingImage={STAR}
+                                ratingBackgroundColor="#fff"
+                                // ratingColor="blue"
+                                ratingCount={item.rating}
+                                readonly={true}
                               />
                             </View>
+
                           </View>
                           <Text
                             style={{

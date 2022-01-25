@@ -1,14 +1,14 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-View,
-Text,
-StyleSheet,
-FlatList,
-Image,
-ActivityIndicator,
-SafeAreaView,
-TouchableWithoutFeedback
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    Image,
+    ActivityIndicator,
+    SafeAreaView,
+    TouchableWithoutFeedback
 } from "react-native";
 import HomeHeaderView from "../component/HomeHeaderView";
 import Header from '../component/Header'
@@ -65,7 +65,11 @@ export default function Category({ navigation }) {
                                 <View style={{ paddingLeft: 50 }}>
                                     <View style={style.favcon}>
                                         <View style={{ flexDirection: 'row', paddingVertical: 20, position: 'relative' }}>
-                                            <Image style={style.fav} source={{ uri: `${item.result.image}` }} />
+                                            <Image style={style.fav} source={{
+                                                uri: item.result.image ? `${item.result.image}` :
+                                                    'https://ninejars.co.uk/wp-content/uploads/2020/11/placeholder-profile-male.jpg'
+                                            }}
+                                            />
                                             <View style={{ lineHeight: 10, width: '55%' }}>
                                                 <Text style={{ fontSize: 16, fontWeight: '500', paddingBottom: 3 }}>{item.result.name}</Text>
                                                 <Text style={{ fontSize: 14, fontWeight: '100', color: '#808080', paddingBottom: 20 }}>{item.result.category}</Text>
@@ -80,7 +84,7 @@ export default function Category({ navigation }) {
                                                                 ratingImage={STAR}
                                                                 style={{ left: -4 }}
                                                                 ratingBackgroundColor="#f4f4f4"
-                                                               // ratingColor="blue"
+                                                                // ratingColor="blue"
                                                                 ratingCount={1}
                                                                 readonly={true}
                                                             />

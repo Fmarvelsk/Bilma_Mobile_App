@@ -20,8 +20,7 @@ export const rootReducer = (state = initialState, action) => {
     case types.LOGOUT:
       return { ...state, user: null }
     case types.ADDFAV:
-      state.favourite.push(action.payload)
-      return { ...state, favourite : [...state.favourite] }
+      return { ...state, favourite : [...state.favourite, action.payload] }
       
       case types.USER : 
       return {...state, profile : action.payload}

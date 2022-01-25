@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Image, View, LogBox } from "react-native";
+import { Image, View, LogBox, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -8,23 +8,27 @@ import Profile from "./screens/Profile";
 import HomeStack from "./screens/HomeStack";
 import { useDispatch, useSelector } from "react-redux";
 import Favourite from "./screens/Favourite";
-import { db } from "./firebase";
-import { saveUser } from "./store/action";
-
+import { db, auth } from "./firebase";
+import { logoutProfile, saveUser, saveUserId } from "./store/action";
 
 export default function MobileIndex() {
   const { user } = useSelector(s => s.rootReducer)
   const dispatch = useDispatch()
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
-
+  const [loading, setLoading] = useState(false)
+  
   const fetchUserProfile = useCallback(async () => {
 
     try {
+      if(user){
       await db.collection('profiles').doc(user)
         .get().then(snap => {
           dispatch(saveUser(snap.data()))
         })
+        
+       }
+      return 
     }
     catch (err) {
       console.log(err)
@@ -34,6 +38,8 @@ export default function MobileIndex() {
   useEffect(() => {
     fetchUserProfile()
   }, [fetchUserProfile])
+
+  
 
   return (
     <NavigationContainer>
@@ -85,6 +91,7 @@ export default function MobileIndex() {
           </Tab.Navigator>
         </>
       )}
+      
     </NavigationContainer>
   );
 }

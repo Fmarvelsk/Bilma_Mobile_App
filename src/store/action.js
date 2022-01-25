@@ -20,6 +20,7 @@ export const logoutProfile = (data) => {
 }
 
 export const addFavorite = (data) => {
+    console.log(data)
     return dispatch({type : types.ADDFAV, payload : data})
 }
 export const removeFavourite = (data) => {

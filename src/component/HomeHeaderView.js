@@ -64,7 +64,12 @@ const image = [
     }, {
         url: "https://image.pngaaa.com/999/4818999-middle.png",
         label: "Barber"
+    },
+    {
+        url : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_emqdM74-EywCJEhsr_ekwycH5zX2KfY1gA&usqp=CAU",
+        label: "Mechanic"
     }
+
 
 ]
 
