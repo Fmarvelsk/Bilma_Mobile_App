@@ -16,8 +16,9 @@ import sech from '../assets/search.png'
 import Search from "./Searchbar";
 import CustomImage from "./CustomImage";
 import Header from "./Header";
-import { db } from "../firebase";
-import { useSelector } from "react-redux";
+import { db, auth } from "../firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutProfile } from "../store/action";
 
 
 const { width } = Dimensions.get("window")
@@ -68,8 +69,7 @@ const image = [
     {
         url : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_emqdM74-EywCJEhsr_ekwycH5zX2KfY1gA&usqp=CAU",
         label: "Mechanic"
-    }
-
+    },
 
 ]
 
@@ -78,6 +78,7 @@ export default function HomeHeaderView({ navigation, children, header }) {
     const { user } = useSelector(s => s.rootReducer)
     const [fetchData, setAllFetchData] = useState([])
     const [filteredData, setFilteredData] = useState()
+    const dispatch = useDispatch()
 
     function searchEngine(text) {
         if (text) {
@@ -111,6 +112,11 @@ export default function HomeHeaderView({ navigation, children, header }) {
         }
     }, [user])
 
+    function logoutUser() {
+        auth.signOut()
+        dispatch(logoutProfile())
+      }
+
     useEffect(() => {
         getAllData()
     }, [getAllData])
@@ -139,7 +145,7 @@ export default function HomeHeaderView({ navigation, children, header }) {
                         //value={search}
                         />
 
-                        <Image source={sech} style={{ position: 'absolute', top: 12, left: 10 }} width={20} width={20} />
+                        <Image source={sech} style={{ position: 'absolute', top: 12, left: 10 }} width={20} />
                         {
                             search ?
                                 <TouchableOpacity

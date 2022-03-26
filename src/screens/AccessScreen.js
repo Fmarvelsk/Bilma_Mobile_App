@@ -52,7 +52,7 @@ export default function AccessScreen() {
         )
         : signUp === 1 ?
           (<>
-            <Text style={styles.headerText}>Welcome To Kilonta!</Text>
+            <Text style={styles.headerText}>Kilonta!</Text>
             <Image style={{
               marginBottom: 30
             }} source={require('../assets/profile.png')} width={100} height={100}/>

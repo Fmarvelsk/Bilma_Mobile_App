@@ -91,7 +91,7 @@ const Profile = () => {
             {profile.address ? (<View style={styles.detailItem}>
               <Text style={styles.itemLeft}>Address</Text>
               <Text numberOfLines={3} style={styles.itemRight}>
-                Block 5, Sinzu plaza OAU central market
+                {profile.address}
               </Text>
             </View>) : null}
 

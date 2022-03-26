@@ -14,7 +14,6 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -22,8 +21,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package" : "com.fmarvelsk.kilonta",
-      "versionCode" : 1,
+      "package": "com.fmarvelsk.kilonta",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
