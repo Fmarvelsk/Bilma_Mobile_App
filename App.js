@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, View } from 'react-native';
+import { Image, View, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,6 +10,8 @@ import HomeStack from './src/screens/HomeStack';
 import { Provider } from "react-redux";
 import { store } from "./src/store";
 import Favourite from './src/screens/Favourite';
+
+LogBox.ignoreLogs(['Setting a timer']);
 
 export default function App() {
   const [user, setUser] = useState(true)
