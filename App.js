@@ -18,6 +18,8 @@ export default function App() {
 
 
   LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+  LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews with the same orientation']);
+
   if (!fontsLoaded) {
     return <View />;
   } else {
