@@ -12,7 +12,9 @@ export default function CustomImage({ src, url, text, navigation }) {
             {url ?
                 (<TouchableWithoutFeedback onPress={goToCategory}>
                     <View style={styles.text}>
+                        <View>
                         <Image source={{ uri: src }} style={styles.image} />
+                        </View>
                         <Text style={{ textAlign: 'center'}}>{text}</Text>
                     </View>
                 </TouchableWithoutFeedback>)
@@ -20,7 +22,7 @@ export default function CustomImage({ src, url, text, navigation }) {
                 (<TouchableWithoutFeedback>
                     <View style={styles.text}>
 
-                        <Image source={src} style={styles.Nearimage} />
+                        <Image source={src.img} style={styles.Nearimage} />
                     </View>
                 </TouchableWithoutFeedback>)}
         </>)
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
         borderRadius: 25
     },
     text: {
-        marginRight: 20
+        marginRight: 20,
     },
     
 })
