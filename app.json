@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Kilonta",
-    "slug": "kilonta",
+    "name": "Recommendation App",
+    "slug": "Recommendation App",
     "version": "1.0.0",
-    "description": "An advert app for domestic business",
+    "description": "A Recommendation App for Tailors",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "splash": {
@@ -21,7 +21,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.fmarvelsk.kilonta",
+      "package": "com.recommend.app",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
